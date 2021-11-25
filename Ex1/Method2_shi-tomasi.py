@@ -17,7 +17,7 @@ def Shi_Tomasi(img_path, intersest_point_number):
     corners = np.int0(corners)
     for i in corners:
         x, y = i.ravel()
-        cv.circle(img, (x, y), 5, 255, -1)
+        cv.circle(img, (x, y), 4, (0, 0, 255), -1)
     img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
     return img
 

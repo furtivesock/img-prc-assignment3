@@ -5,15 +5,15 @@ import cv2 as cv
 MAIN_IMAGE_PATH = 'Michelangelo/Michelangelo_ThecreationofAdam_1707x775.jpg'
 FIRST_FRAGMENT_PATH = 'Michelangelo/frag_eroded/frag_eroded_0.png'
 
-# Method 3 : SIFT (2004)
-# https://docs.opencv.org/4.x/da/df5/tutorial_py_sift_intro.html
-# Changement in the scoring method
+# Method 4 : SURF (2006)
+# https://docs.opencv.org/4.x/df/dd2/tutorial_py_surf_intro.html
+# Faster than SIFT, but can't be tested because it is't included in OpenCV
 
 
-def Shi_Tomasi(img_path, nb_points=None):
+def find_interest_points(img_path, nb_points=None):
     img = cv.imread(img_path)
-    sift = cv.SIFT_create(nfeatures=nb_points)
-    kp, des = sift.detectAndCompute(img, None)
+    surf = cv.xfeatures2d.SURF_create(nb_points)
+    kp, des = surf.detectAndCompute(img, None)
     # Here kp will be a list of keypoints
     # and des is a numpy array of shape (Number of Keypoints)×128
 
@@ -25,8 +25,8 @@ def Shi_Tomasi(img_path, nb_points=None):
     return img
 
 
-main_image = Shi_Tomasi(MAIN_IMAGE_PATH)
-fragment_image = Shi_Tomasi(FIRST_FRAGMENT_PATH, 10)
+main_image = find_interest_points(MAIN_IMAGE_PATH)
+fragment_image = find_interest_points(FIRST_FRAGMENT_PATH, 10)
 plt.figure('SIFT')
 plt.subplot(2, 1, 1)
 plt.title("SIFT")
