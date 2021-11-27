@@ -9,7 +9,7 @@ img1 = cv.imread(FRAGMENT_PATH, cv.IMREAD_GRAYSCALE)    # queryImage
 img2 = cv.imread(MAIN_IMAGE_PATH, cv.IMREAD_GRAYSCALE)  # trainImage
 
 # Initiate ORB detector
-orb = cv.ORB_create()
+orb = cv.ORB_create(30000)
 # find the keypoints and descriptors with ORB
 kp1, des1 = orb.detectAndCompute(img1, None)
 kp2, des2 = orb.detectAndCompute(img2, None)
