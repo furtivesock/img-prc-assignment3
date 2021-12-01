@@ -48,68 +48,12 @@ def get_BFMatcher_associations(from_des, to_des, distance_threshold=0.75):
     return good_matches
 
 
-def add_fragment_to_target_image(fragment_info, fragment_img, target_image, target_width, target_height) -> None:
-    """Place a rotated fragment on the fresco
-    by filling the background pixels on the right position with fragment ones
-
-    Args:
-        fragment_info (object):     Fragment settings: coordinates (x, y)
-        fragment_img (2D array):    Image of a fragment
-        target_image (2D array):    Original fresco background
-        target_width (int):         Fresco width
-        target_height (int):        Fresco height
-    """
-    fragment_coord_y = 0
-    fragment_coord_x = 0
-
-    # Iterate each one of the fragment pixels
-    for row in fragment_img:
-        # Calculate the y coodinate of the fragment pixel on the target image
-        target_image_fragment_y = fragment_info["y"] - \
-            int(fragment_img.shape[0] / 2) + fragment_coord_y
-        # Check that we are the fragment image isn't going to be out of the image
-        if target_image_fragment_y < 0 or target_image_fragment_y >= target_height:
-            continue
-
-        for pixel in row:
-            # Because target image is in JPG (R, G, B) and fragment_image if alpha > 0 (non-transparent) --> add pixel to target_image
-            if pixel[3] > 200:
-                # The alpha is > 0 : the pixel isn't tranparent
-                # Calculate the x coordinate of the fragment pixel on the target image
-                target_image_fragment_x = fragment_info["x"] - int(
-                    fragment_img.shape[1] / 2) + fragment_coord_x
-                # Check that the fragment image isn't going to be out of the image
-                if target_image_fragment_x < 0 or target_image_fragment_x >= target_width:
-                    continue
-
-                # Add the pixel to the target image
-                target_image[target_image_fragment_y][target_image_fragment_x] = [
-                    pixel[0], pixel[1], pixel[2]]
-
-            fragment_coord_x += 1
-
-        fragment_coord_y += 1
-        fragment_coord_x = 0
-
-
 # Main : test the methods
 if __name__ == "__main__":
 
     # Get the fresco
     fresco = cv.imread(
         "Michelangelo/Michelangelo_ThecreationofAdam_1707x775.jpg", cv.IMREAD_GRAYSCALE)
-    result = cv.imread(
-        "Michelangelo/Michelangelo_ThecreationofAdam_1707x775.jpg", cv.IMREAD_UNCHANGED)
-
-    # Set a light background with the original image
-    # It will help us understand how the fragments match
-    # Add a low alpha channel to the original_img
-    ORIGINAL_IMAGE_OPACITY = 0.3
-    target_height, target_width, _ = result.shape
-    white_background = np.full(
-        (target_height, target_width, 3), 255, dtype=np.uint8)
-    background = cv.addWeighted(
-        result, ORIGINAL_IMAGE_OPACITY, white_background, 1 - ORIGINAL_IMAGE_OPACITY, 0)
 
     # Get the ORB interest points
     fresco_kp, fresco_des = get_ORB_interest_points(
@@ -148,50 +92,16 @@ if __name__ == "__main__":
             continue
 
         ok_frag_match_nb += 1
-        fragment_result = cv.imread(fragment_path, cv.IMREAD_UNCHANGED)
 
-        # Calculating the fragment position
-        fresco_match_point = fresco_kp[matches[0][0].trainIdx].pt
-        fragment_match_point = fragment_kp[matches[0][0].queryIdx].pt
-        fresco_match_point = (
-            int(fresco_match_point[0]),
-            int(fresco_match_point[1])
-        )
+        # Draw the matches
+        img3 = cv.drawMatchesKnn(fragment, fragment_kp, fresco, fresco_kp,
+                                 matches[:2], None, flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 
-        # Set the match point relatif to the center of the fragment
-        fragment_match_point = (
-            int(fragment_match_point[0] - fragment.shape[1] / 2),
-            int(fragment_match_point[1] - fragment.shape[0] / 2)
-        )
-
-        frag_height = fragment.shape[0]
-        frag_width = fragment.shape[1]
-
-        # The new position is the fresco match point + the fragment match point
-        frag_position_x = fresco_match_point[0] + fragment_match_point[0]
-        frag_position_y = fresco_match_point[1] + fragment_match_point[1]
-
-        fragment_result = cv.circle(
-            fragment_result, fragment_match_point, 5, (255, 0, 0), 2)
-        add_fragment_to_target_image({"x": frag_position_x, "y": frag_position_y},
-                                     fragment_result, background, background.shape[1], background.shape[0])
-
-        background = cv.circle(
-            background, fresco_match_point, 5, (0, 0, 255), 2)
-
-        # # Draw the matches
-        # img3 = cv.drawMatchesKnn(fragment, fragment_kp, fresco, fresco_kp,
-        #                          matches[:2], None, flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-
-        # # if the 'q' key is pressed, stop the loop
-        # cv.imshow(fragment_path, img3)
-        # if cv.waitKey() & 0xFF == ord("q"):
-        #     break
-        # cv.destroyAllWindows()
-
-    cv.imshow(fragment_path, background)
-    cv.waitKey()
-    cv.destroyAllWindows()
+        # if the 'q' key is pressed, stop the loop
+        cv.imshow(fragment_path, img3)
+        if cv.waitKey() & 0xFF == ord("q"):
+            break
+        cv.destroyAllWindows()
 
     print(ok_frag_kp_nb, "/", len(fragments),
           math.floor((ok_frag_kp_nb / len(fragments)) * 100), "% kp ok")
