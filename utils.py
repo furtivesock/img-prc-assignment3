@@ -7,7 +7,7 @@ import os
 import numpy as np
 import cv2 as cv
 
-MICHELANGELO_PATH = "Michelangelo/Michelangelo_ThecreationofAdam_1707x775.jpg"
+MICHELANGELO_PATH = "../Michelangelo/Michelangelo_ThecreationofAdam_1707x775.jpg"
 ORIGINAL_IMAGE_OPACITY = 0.3
 
 def get_all_fragments_path(folder_path):
@@ -112,3 +112,24 @@ def add_fragment_to_target_image(fragment_info, fragment_img, target_image, targ
 
         fragment_coord_y += 1
         fragment_coord_x = 0
+
+def rotate_fragment(fragment_img, angle, cols_f, rows_f) -> np.array:
+    """Rotate a fragment by the angle
+
+    Args:
+        fragment_img (2D array):    Image of a fragment
+        angle (double):             Angle (in radians) to rotate
+        cols_f (int):               Fragment width
+        rows_f (int):               Fragment height
+
+    Returns:
+        2D array: Rotated fragment
+    """
+    # Calculate the coordinates of the center of the fragment
+    certer_coordinates = ((cols_f - 1) / 2.0, (rows_f - 1) / 2.0)
+    # Create a rotation matrix
+    M_rotation = cv.getRotationMatrix2D(certer_coordinates, angle, 1)
+    # Apply the rotation matrix on the fragment
+    rotated_fragment = cv.warpAffine(
+        fragment_img, M_rotation, (cols_f, rows_f))
+    return rotated_fragment
