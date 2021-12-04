@@ -7,7 +7,11 @@ import sys
 sys.path.append('..')
 from utils import *
 
-THRESHOLD_RADIUS = 100
+FRESCO_IMG = MICHELANGELO_IMG
+FRESCO_PATH = MICHELANGELO_PATH
+
+MATCHER_THRESHOLD = 0.9
+THRESHOLD_RADIUS = 75
 MAX_ITER = 10000
 MATCHES_N = 2
 
@@ -46,22 +50,14 @@ def get_relevant_matches(frag_img, matches, img_keypoints, frag_keypoints, n=MAT
                 random_indexes.append(index)
                 random_matches.append(matches[index][0])
                 del remaining_matches[index]
-        A_img, A_frag = get_match_keypoints_coords(random_matches[0], img_keypoints, frag_keypoints)
-        B_img, B_frag = get_match_keypoints_coords(random_matches[1], img_keypoints, frag_keypoints)
-        theta = get_intersection_angle(A_frag, B_frag, A_img, B_img)
-        center_frag = ((cols_f - 1) / 2, (rows_f - 1) / 2)
-        r = get_rotation_matrix(theta)
-        A_frag_rotated = np.matmul(r, np.array(A_frag))
-        t = get_translation(A_img, A_frag_rotated)
-        center_img = get_translated_coordinates(center_frag, t, theta)
         
-        model = Model(int(center_img[0]), int(center_img[1]), theta)
+        model, t = get_model(random_matches[0], random_matches[1], img_keypoints, frag_keypoints, cols_f, rows_f)
         models.append(model)
 
         model_matches = []
         for match in remaining_matches:
             kp_img, kp_frag = get_match_keypoints_coords(match[0], img_keypoints, frag_keypoints)
-            kp_check_img = t + np.matmul(r, np.array(kp_frag))
+            kp_check_img = get_translated_coordinates(kp_frag, t, model.theta)
             if is_in_circle(kp_check_img, kp_img, threshold_radius):
                 model_matches.append(match[0])
         matches_sets.append(model_matches)
@@ -93,7 +89,7 @@ def get_intersection_angle(A_frag, B_frag, A_img, B_img):
     if norm_product == 0:
         return 0
 
-    return math.acos( ( u[0] * v[0] + u[1] * v[1] ) / ( norm_u * norm_v ) )
+    return math.acos( round( ( u[0] * v[0] + u[1] * v[1] ) / ( norm_product ) , 2) )
 
 def get_translation(pt_img, pt_origin):
     return np.array([pt_img[0] - pt_origin[0], pt_img[1] - pt_origin[1]])
@@ -129,7 +125,7 @@ def get_model(A_match, B_match, img_keypoints, frag_keypoints, cols_f, rows_f):
     t = get_translation(A_img, A_frag_rotated)
     center_img = get_translated_coordinates(center_frag, t, theta)
     
-    return Model(int(center_img[0]), int(center_img[1]), theta)
+    return Model(int(center_img[0]), int(center_img[1]), theta), t
 
 def get_model_regression(frag_img, initial_model, inliers_matches, img_keypoints, frag_keypoints):
     cols_f, rows_f = frag_img.shape[:2]
@@ -138,9 +134,8 @@ def get_model_regression(frag_img, initial_model, inliers_matches, img_keypoints
         model_matches = [inliers_matches[i]]
         if i + 1 != len(inliers_matches) - 1:
             for j in range(i + 1, len(inliers_matches)):
-                # TODO 
                 model_matches.append(inliers_matches[j])
-                model = get_model(model_matches[0], model_matches[1], img_keypoints, frag_keypoints, cols_f, rows_f)
+                model, _ = get_model(model_matches[0], model_matches[1], img_keypoints, frag_keypoints, cols_f, rows_f)
                 models.append(model)
     x_avg = sum(model.x for model in models)/float(len(models))
     y_avg = sum(model.y for model in models)/float(len(models))
@@ -150,9 +145,9 @@ def get_model_regression(frag_img, initial_model, inliers_matches, img_keypoints
 if __name__ == "__main__":
     # Get the fresco
     fresco = cv.imread(
-        "../Michelangelo/Michelangelo_ThecreationofAdam_1707x775.jpg", cv.IMREAD_GRAYSCALE)
+        FRESCO_IMG, cv.IMREAD_GRAYSCALE)
 
-    background = get_image_background(MICHELANGELO_PATH)
+    background = get_image_background(FRESCO_IMG)
 
     # Get the ORB interest points
     fresco_kp, fresco_des = get_ORB_interest_points(
@@ -161,7 +156,7 @@ if __name__ == "__main__":
     print("fresco_kp: ", len(fresco_kp))
 
     # Get the fragments
-    fragments = get_all_fragments_path("../Michelangelo")
+    fragments = get_all_fragments_path(FRESCO_PATH)
     print("Number of fragments : ", len(fragments))
 
     ok_frag_kp_nb = 0
@@ -184,13 +179,17 @@ if __name__ == "__main__":
         ok_frag_kp_nb += 1
 
         # Get the BFMatcher associations
-        matches = get_BFMatcher_associations(fragment_des, fresco_des, 0.75)
+        matches = get_BFMatcher_associations(fragment_des, fresco_des, MATCHER_THRESHOLD)
         print("        matches: ", len(matches))
         if len(matches) < 2:
             print("             ! Not enough matches")
             continue
 
+        ok_frag_match_nb += 1
+
         inliers_matches, best_model = get_relevant_matches(fragment, matches, fresco_kp, fragment_kp)
+
+        # Question 2.3
         if len(inliers_matches) > MATCHES_N:
             best_model = get_model_regression(fragment, best_model, inliers_matches, fresco_kp, fragment_kp)
 
@@ -204,25 +203,24 @@ if __name__ == "__main__":
         add_fragment_to_target_image({"x": best_model.x, "y": best_model.y},
                                      rotated_fragment, background, background.shape[1], background.shape[0])
         
-        
-
+    
+        # TODO: Enable parameter for fragment number writing
         cv.putText(
             background,
             get_fragment_number(fragment_path),
             (best_model.x, best_model.y),
             cv.FONT_HERSHEY_SIMPLEX,
             0.5,
-            (255, 0, 0, 255),
+            (0, 0, 255, 255),
             2
         )
         
 
-    cv.imshow(fragment_path, background)
+    cv.imshow("Fresco with the fragments", background)
     cv.waitKey()
     cv.destroyAllWindows()
 
-    # TODO: Stats
-    # print(ok_frag_kp_nb, "/", len(fragments),
-    #       math.floor((ok_frag_kp_nb / len(fragments)) * 100), "% kp ok")
-    # print(ok_frag_match_nb, "/", ok_frag_kp_nb,
-    #       math.floor((ok_frag_match_nb / ok_frag_kp_nb) * 100), "% match ok")
+    print(ok_frag_kp_nb, "/", len(fragments),
+          math.floor((ok_frag_kp_nb / len(fragments)) * 100), "% kp ok")
+    print(ok_frag_match_nb, "/", ok_frag_kp_nb,
+          math.floor((ok_frag_match_nb / ok_frag_kp_nb) * 100), "% match ok")
