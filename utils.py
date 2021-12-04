@@ -8,7 +8,12 @@ import numpy as np
 import cv2 as cv
 import re
 
-MICHELANGELO_PATH = "../Michelangelo/Michelangelo_ThecreationofAdam_1707x775.jpg"
+MICHELANGELO_IMG = "../Michelangelo/Michelangelo_ThecreationofAdam_1707x775.jpg"
+DOMENICHO_IMG = "../Domenichino_Virgin-and-unicorn/Domenichino_Virgin-and-unicorn.jpg"
+
+MICHELANGELO_PATH = "../Michelangelo"
+DOMENICHO_PATH = "../Domenichino_Virgin-and-unicorn"
+
 ORIGINAL_IMAGE_OPACITY = 0.3
 
 def get_all_fragments_path(folder_path):
