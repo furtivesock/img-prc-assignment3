@@ -6,6 +6,7 @@ Authors: Tom Mansion <tom.mansion@universite-paris-saclay.fr>, Sophie Nguyen <so
 import os
 import numpy as np
 import cv2 as cv
+import re
 
 MICHELANGELO_PATH = "../Michelangelo/Michelangelo_ThecreationofAdam_1707x775.jpg"
 ORIGINAL_IMAGE_OPACITY = 0.3
@@ -112,6 +113,11 @@ def add_fragment_to_target_image(fragment_info, fragment_img, target_image, targ
 
         fragment_coord_y += 1
         fragment_coord_x = 0
+
+def get_fragment_number(fragment_path):
+    p = re.compile('(\d+)\.png')
+    m = p.search(fragment_path)
+    return m.group(1)
 
 def rotate_fragment(fragment_img, angle, cols_f, rows_f) -> np.array:
     """Rotate a fragment by the angle
