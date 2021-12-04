@@ -10,8 +10,9 @@ from utils import *
 FRESCO_IMG = MICHELANGELO_IMG
 FRESCO_PATH = MICHELANGELO_PATH
 
+GOOD_MATCH_PERCENT = 0.3
 MATCHER_THRESHOLD = 0.9
-THRESHOLD_RADIUS = 75
+THRESHOLD_RADIUS = 15
 MAX_ITER = 10000
 MATCHES_N = 2
 
@@ -142,6 +143,15 @@ def get_model_regression(frag_img, initial_model, inliers_matches, img_keypoints
     theta_avg = sum(model.theta for model in models)/float(len(models))
     return Model(int(x_avg), int(y_avg), theta_avg)
 
+def is_similar_color(frag_pt_area, img_pt_area, threshold):
+    pass
+
+def get_good_matches(matches, good_percent):
+    # TODO: Sort by best distance (similarity) (the lower, the best)
+    matches.sort(key=lambda m: m[0].distance)
+    good_matches_count = int(len(matches) * good_percent)
+    return matches[0:good_matches_count]
+
 if __name__ == "__main__":
     # Get the fresco
     fresco = cv.imread(
@@ -180,11 +190,14 @@ if __name__ == "__main__":
 
         # Get the BFMatcher associations
         matches = get_BFMatcher_associations(fragment_des, fresco_des, MATCHER_THRESHOLD)
+
+        matches = get_good_matches(matches, GOOD_MATCH_PERCENT)
+
         print("        matches: ", len(matches))
         if len(matches) < 2:
-            print("             ! Not enough matches")
+            print("             ! Not enough matches.")
             continue
-
+            
         ok_frag_match_nb += 1
 
         inliers_matches, best_model = get_relevant_matches(fragment, matches, fresco_kp, fragment_kp)
