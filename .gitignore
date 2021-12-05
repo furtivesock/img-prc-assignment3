@@ -2,3 +2,5 @@ Domenichino_Virgin-and-unicorn/
 Michelangelo/
 *.pdf
 out/
+*.prof
+*.pyc
