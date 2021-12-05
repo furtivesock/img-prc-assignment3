@@ -16,7 +16,6 @@ DOMENICHO_PATH = "Domenichino_Virgin-and-unicorn"
 
 ORIGINAL_IMAGE_OPACITY = 0.3
 
-
 def get_all_fragments_path(folder_path):
     """
     Get all fragments from a folder.
@@ -27,7 +26,6 @@ def get_all_fragments_path(folder_path):
         if fragments_file.endswith(".png"):
             fragments.append(folder_path + fragments_file)
     return fragments
-
 
 def get_image_background(image_path):
     """Set a light background with the original image
@@ -47,7 +45,6 @@ def get_image_background(image_path):
         (target_height, target_width, 3), 255, dtype=np.uint8)
     return cv.addWeighted(
         image, ORIGINAL_IMAGE_OPACITY, white_background, 1 - ORIGINAL_IMAGE_OPACITY, 0)
-
 
 def get_ORB_interest_points(image, number_of_keypoints):
     """
@@ -79,7 +76,6 @@ def get_BFMatcher_associations(from_des, to_des, distance_threshold=0.75):
             good_matches.append([m])
 
     return good_matches
-
 
 def add_fragment_to_target_image(fragment_info, fragment_img, target_image, target_width, target_height) -> None:
     """Place a rotated fragment on the fresco
@@ -124,12 +120,10 @@ def add_fragment_to_target_image(fragment_info, fragment_img, target_image, targ
         fragment_coord_y += 1
         fragment_coord_x = 0
 
-
 def get_fragment_number(fragment_path):
     p = re.compile('(\d+)\.png')
     m = p.search(fragment_path)
     return m.group(1)
-
 
 def rotate_fragment(fragment_img, angle, cols_f, rows_f) -> np.array:
     """Rotate a fragment by the angle

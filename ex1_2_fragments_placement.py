@@ -1,8 +1,13 @@
+"""Exercise 1 (Pt. 2)
+Try to place the fragments on the fresco using the first match, without filtering
+
+Authors: Tom Mansion <tom.mansion@universite-paris-saclay.fr>, Sophie Nguyen <sophie.nguyen@universite-paris-saclay.fr>
+"""
+
 import os
 import math
 import cv2 as cv
 import numpy as np
-
 
 def get_all_fragments_path(folder_path):
     """
@@ -14,7 +19,6 @@ def get_all_fragments_path(folder_path):
         if fragments_file.endswith(".png"):
             fragments.append(folder_path + fragments_file)
     return fragments
-
 
 def get_ORB_interest_points(image, number_of_keypoints):
     """
@@ -28,12 +32,12 @@ def get_ORB_interest_points(image, number_of_keypoints):
     kp, des = orb.detectAndCompute(image, None)
     return kp, des
 
-
 def get_BFMatcher_associations(from_des, to_des, distance_threshold=0.75):
     """
     Get the BFMatcher associations.
-    from_des: descriptors of the fragment
-    to_des: descriptors of the main image
+    Args:
+        from_des: descriptors of the fragment
+        to_des: descriptors of the main image
     """
     # BFMatcher with default params
     bf = cv.BFMatcher()
@@ -46,7 +50,6 @@ def get_BFMatcher_associations(from_des, to_des, distance_threshold=0.75):
             good_matches.append([m])
 
     return good_matches
-
 
 def add_fragment_to_target_image(fragment_info, fragment_img, target_image, target_width, target_height) -> None:
     """Place a rotated fragment on the fresco
@@ -158,7 +161,7 @@ if __name__ == "__main__":
             int(fresco_match_point[1])
         )
 
-        # Set the match point relatif to the center of the fragment
+        # Set the match point related to the center of the fragment
         fragment_match_point = (
             int(fragment_match_point[0] - fragment.shape[1] / 2),
             int(fragment_match_point[1] - fragment.shape[0] / 2)
@@ -178,16 +181,6 @@ if __name__ == "__main__":
 
         background = cv.circle(
             background, fresco_match_point, 5, (0, 0, 255), 2)
-
-        # # Draw the matches
-        # img3 = cv.drawMatchesKnn(fragment, fragment_kp, fresco, fresco_kp,
-        #                          matches[:2], None, flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-
-        # # if the 'q' key is pressed, stop the loop
-        # cv.imshow(fragment_path, img3)
-        # if cv.waitKey() & 0xFF == ord("q"):
-        #     break
-        # cv.destroyAllWindows()
 
     cv.imshow(fragment_path, background)
     cv.waitKey()
