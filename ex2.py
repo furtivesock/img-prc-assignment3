@@ -14,7 +14,7 @@ FRESCO_PATH = MICHELANGELO_PATH
 GOOD_MATCH_PERCENT = 0.3
 MATCHER_THRESHOLD = 0.9
 THRESHOLD_RADIUS = 15
-MAX_ITER = 20000
+MAX_ITER = 10000
 MATCHES_N = 2
 
 
@@ -252,8 +252,13 @@ def main():
         )
 
         # Question 3
-        solution_export.append([get_fragment_number(
-            fragment_path), best_model.x, best_model.y, math.degrees(best_model.theta)])
+        solution_export.append(
+            [
+                get_fragment_number(fragment_path),
+                best_model.x,
+                best_model.y,
+                math.degrees(best_model.theta) - 360
+            ])
 
     cv.imshow("Fresco with the fragments", background)
     cv.waitKey()
