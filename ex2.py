@@ -3,6 +3,7 @@ import random as rd
 import cv2 as cv
 import matplotlib.pyplot as plt
 import numpy as np
+import csv
 
 from utils import MICHELANGELO_IMG, MICHELANGELO_PATH, rotate_fragment, get_fragment_number, get_image_background, add_fragment_to_target_image, get_ORB_interest_points, get_all_fragments_path, get_BFMatcher_associations
 
@@ -13,7 +14,7 @@ FRESCO_PATH = MICHELANGELO_PATH
 GOOD_MATCH_PERCENT = 0.3
 MATCHER_THRESHOLD = 0.9
 THRESHOLD_RADIUS = 15
-MAX_ITER = 1000
+MAX_ITER = 20000
 MATCHES_N = 2
 
 
@@ -125,8 +126,6 @@ def get_rotation_matrix(theta):
             (-np.sin(theta),  np.cos(theta)))
     )
 
-# TODO: Question 3
-
 
 def get_model(A_match, B_match, img_keypoints, frag_keypoints, cols_f, rows_f):
     A_img, A_frag = get_match_keypoints_coords(
@@ -189,6 +188,8 @@ def main():
 
     ok_frag_kp_nb = 0
     ok_frag_match_nb = 0
+    solution_export = []  # For the ex3 [frag_num, x, y, theta]
+
     for fragment_path in fragments:  # :10]:
         print("  ", fragment_path)
 
@@ -237,7 +238,9 @@ def main():
 
         add_fragment_to_target_image({"x": best_model.x, "y": best_model.y},
                                      rotated_fragment, background, background.shape[1], background.shape[0])
+
         # TODO: Enable parameter for fragment number writing
+
         cv.putText(
             background,
             get_fragment_number(fragment_path),
@@ -248,6 +251,10 @@ def main():
             2
         )
 
+        # Question 3
+        solution_export.append([get_fragment_number(
+            fragment_path), best_model.x, best_model.y, math.degrees(best_model.theta)])
+
     cv.imshow("Fresco with the fragments", background)
     cv.waitKey()
     cv.destroyAllWindows()
@@ -256,6 +263,12 @@ def main():
           math.floor((ok_frag_kp_nb / len(fragments)) * 100), "% kp ok")
     print(ok_frag_match_nb, "/", ok_frag_kp_nb,
           math.floor((ok_frag_match_nb / ok_frag_kp_nb) * 100), "% match ok")
+
+    # Question 3 - Export solution in txt (csv with space delimiter)
+    csv_file_name = "solution_ORB_BFMATCHER_" + str(MAX_ITER) + "_MAX_ITER.txt"
+    with open(csv_file_name, "w") as csv_file:
+        writer = csv.writer(csv_file, delimiter=' ')
+        writer.writerows(solution_export)
 
 
 if __name__ == "__main__":
