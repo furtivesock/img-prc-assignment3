@@ -1,9 +1,7 @@
-Domenichino_Virgin-and-unicorn/
-Michelangelo/
 *.pdf
 out/
 *.prof
 *.pyc
 *.txt
-*.png
 *.gif
+results/
