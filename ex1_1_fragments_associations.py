@@ -1,8 +1,12 @@
+"""Exercise 1 (Pt. 1)
+For each fragment, compute associations with the fresco using KNN matcher and show the matches.
+
+Authors: Tom Mansion <tom.mansion@universite-paris-saclay.fr>, Sophie Nguyen <sophie.nguyen@universite-paris-saclay.fr>
+"""
+
 import os
 import math
 import cv2 as cv
-import numpy as np
-
 
 def get_all_fragments_path(folder_path):
     """
@@ -15,7 +19,6 @@ def get_all_fragments_path(folder_path):
             fragments.append(folder_path + fragments_file)
     return fragments
 
-
 def get_ORB_interest_points(image, number_of_keypoints):
     """
     Get the ORB interest points from a fragment.
@@ -24,7 +27,7 @@ def get_ORB_interest_points(image, number_of_keypoints):
     # Initiate ORB detector
     orb = cv.ORB_create(number_of_keypoints)
 
-    # find the keypoints and descriptors with ORB
+    # Find the keypoints and descriptors with ORB
     kp, des = orb.detectAndCompute(image, None)
     return kp, des
 
