@@ -1,6 +1,6 @@
 # Image processing assignment 3
 
-Source code for third assignment in Image processing course at Polytech Paris-Saclay engineering school.
+Source code for the third assignment in Image processing course at Polytech Paris-Saclay engineering school.
 
 - [Image processing assignment 3](#image-processing-assignment-3)
   - [Introduction](#introduction)
@@ -12,7 +12,7 @@ Source code for third assignment in Image processing course at Polytech Paris-Sa
     - [Ex2](#ex2)
 
 ## Introduction
-In this assignment, we are tring to gess the placement (x, y, rotation) of fragments on the two folowing fresco :
+In this assignment, we are trying to guess the placement (x, y, rotation) of fragments on the two folowing fresco :
 
 **The creation of Adam fresco by Michelangelo :**
 ![Alt text](Michelangelo/Michelangelo_ThecreationofAdam_1707x775.jpg?raw=true "Michelangelo - The creation of Adam fresco")
@@ -85,7 +85,7 @@ python3 ex1_matching/Method1_BfMatcher.py
 python3 ex1_matching/Method2_knnMatch.py
 python3 ex1_matching/Method3_FlanBased.py # Does not work
 ```
-The `ex1_1_fragments_associations.py` script will show the 2 best matches for each fragment. At the end of the script will be displayed the number of fragment that got enough key points and enough matches
+The `ex1_1_fragments_associations.py` script will show the 2 best matches for each fragment. At the end of the script will be displayed the number of fragments that got enough key points and enough matches
 
 ```sh
 python3 ex1_1_fragments_associations.py
@@ -99,7 +99,7 @@ python3 ex1_2_fragments_placement.py
 
 ### Ex2
 
-the `ex2.py` script will try to place each fragment on the original fresco _taking the fragment rotation into consideration_. It does it using the ransack algorithm.
+The `ex2.py` script will try to place each fragment on the original fresco _taking the fragment rotation into consideration_. It does it using the ransack algorithm.
 
 ```sh
 python3 ex2.py
@@ -108,6 +108,6 @@ At the end of the script will be displayed the result, here is an example with t
 
 ![Alt text](result_Michelangelo_10000ite.png?raw=true "Result exemple")
 
-A `stats.prof` file will be generated in the root folder. It can be vissualised with snakeviz :
+A `stats.prof` file will be generated in the root folder. It can be visualized with snakeviz :
 
 ![Alt text](stats.png?raw=true "Performance stats")
