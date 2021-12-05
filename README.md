@@ -99,3 +99,15 @@ python3 ex1_2_fragments_placement.py
 
 ### Ex2
 
+the `ex2.py` script will try to place each fragment on the original fresco _taking the fragment rotation into consideration_. It does it using the ransack algorithm.
+
+```sh
+python3 ex2.py
+```
+At the end of the script will be displayed the result, here is an example with the Michelangelo fresco :
+
+![Alt text](result_Michelangelo_10000ite.png?raw=true "Result exemple")
+
+A `stats.prof` file will be generated in the root folder. It can be vissualised with snakeviz :
+
+![Alt text](stats.png?raw=true "Performance stats")
