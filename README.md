@@ -103,7 +103,7 @@ python3 ex1_2_fragments_placement.py
 
 ### Exercise 2
 
-The `ex2.py` script will try to place each fragment on the original fresco _taking the fragment rotation into consideration_. It does it using the ransack algorithm.
+The `ex2.py` script will try to place each fragment on the original fresco _taking the fragment rotation into consideration_. It does it using the RANSAC algorithm.
 
 ```sh
 python3 ex2.py
