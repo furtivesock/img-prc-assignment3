@@ -7,6 +7,9 @@ Source code for third assignment in Image processing course at Polytech Paris-Sa
   - [Prerequisites](#prerequisites)
   - [File tree](#file-tree)
   - [Installation](#installation)
+  - [Usage](#usage)
+    - [Ex1](#ex1)
+    - [Ex2](#ex2)
 
 ## Introduction
 In this assignment, we are tring to gess the placement (x, y, rotation) of fragments on the two folowing fresco :
@@ -54,8 +57,45 @@ img-prc-assignment3
 
 ## Installation
 
-1. Clone the project first
+Clone the project
 
 ```sh
 git clone https://github.com/furtivesock/img-prc-assignment3.git
+cd img-prc-assignment3/
 ```
+
+## Usage
+
+### Ex1
+
+You can visualize, our test script for key point extraction and matching :
+
+**Key point :**
+```sh
+python3 ex1_interest_points/Method1_Harris.py
+python3 ex1_interest_points/Method2_shi-tomasi.py
+python3 ex1_interest_points/Method3_SIFT.py
+python3 ex1_interest_points/Method4_SURF.py # Does not work
+python3 ex1_interest_points/Method5_FAST.py
+python3 ex1_interest_points/Method6_ORB.py
+```
+**Matching :**
+```sh
+python3 ex1_matching/Method1_BfMatcher.py
+python3 ex1_matching/Method2_knnMatch.py
+python3 ex1_matching/Method3_FlanBased.py # Does not work
+```
+The `ex1_1_fragments_associations.py` script will show the 2 best matches for each fragment. At the end of the script will be displayed the number of fragment that got enough key points and enough matches
+
+```sh
+python3 ex1_1_fragments_associations.py
+```
+
+The `ex1_2_fragments_placement.py` script will try to place each fragment on the original fresco _without taking the fragment rotation into consideration_.
+
+```sh
+python3 ex1_2_fragments_placement.py
+```
+
+### Ex2
+
