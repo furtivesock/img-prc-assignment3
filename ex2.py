@@ -1,3 +1,9 @@
+"""Exercise 2
+RANSAC filter to place the fragments on the right coordinates
+
+Authors: Tom Mansion <tom.mansion@universite-paris-saclay.fr>, Sophie Nguyen <sophie.nguyen@universite-paris-saclay.fr>
+"""
+
 import math
 import random as rd
 import cv2 as cv
@@ -6,7 +12,6 @@ import numpy as np
 import csv
 
 from utils import MICHELANGELO_IMG, MICHELANGELO_PATH, rotate_fragment, get_fragment_number, get_image_background, add_fragment_to_target_image, get_ORB_interest_points, get_all_fragments_path, get_BFMatcher_associations
-
 
 FRESCO_IMG = MICHELANGELO_IMG
 FRESCO_PATH = MICHELANGELO_PATH
